@@ -1,7 +1,7 @@
-"""
+'''
 Disk Tools
 ==========
-"""
+'''
 
 import re
 
@@ -11,7 +11,7 @@ from fabtools.utils import run_as_root
 
 
 def partitions(device=""):
-    """
+    '''
     Get a partition list for all disk or for selected device only
 
     Example::
@@ -25,7 +25,7 @@ def partitions(device=""):
         r = r and parts['/dev/sda2'] == spart['Swap']
         if r:
             print("You can format these partitions")
-    """
+    '''
     partitions_list = {}
     with settings(hide('running', 'stdout')):
         res = run_as_root('sfdisk -d %(device)s' % locals())
@@ -50,7 +50,7 @@ def partitions(device=""):
 
 
 def getdevice_by_uuid(uuid):
-    """
+    '''
     Get a HDD device by uuid
 
     Example::
@@ -60,7 +60,7 @@ def getdevice_by_uuid(uuid):
         device = getdevice_by_uuid("356fafdc-21d5-408e-a3e9-2b3f32cb2a8c")
         if device:
             mount(device,'/mountpoint')
-    """
+    '''
     with settings(hide('running', 'warnings', 'stdout'), warn_only=True):
         res = run_as_root('blkid -U %s' % uuid)
 
@@ -69,19 +69,21 @@ def getdevice_by_uuid(uuid):
 
         return res
 
+
 def getdevice_size(device):
-     """
-     Show the Size of disk
-     Example::
-         from fabtools.disk import getdevice_size
-         getdevice_size('sdb')
-     """
-     size = run_as_root('cat /sys/block/%(device)s/size' % locals())
-     size = int(size) * 512 / 1024 / 1024 / 1024
-     return size
+    '''
+    Show the Size of disk
+    Example::
+        from fabtools.disk import getdevice_size
+        getdevice_size('sdb')
+    '''
+    size = run_as_root('cat /sys/block/%(device)s/size' % locals())
+    size = int(size) * 512 / 1024 / 1024 / 1024
+    return size
+
 
 def mount(device, mountpoint):
-    """
+    '''
     Mount a partition
 
     Example::
@@ -89,13 +91,13 @@ def mount(device, mountpoint):
         from fabtools.disk import mount
 
         mount('/dev/sdb1', '/mnt/usb_drive')
-    """
+    '''
     if not ismounted(device):
         run_as_root('mount %(device)s %(mountpoint)s' % locals())
 
 
 def swapon(device):
-    """
+    '''
     Active swap partition
 
     Example::
@@ -103,13 +105,13 @@ def swapon(device):
         from fabtools.disk import swapon
 
         swapon('/dev/sda1')
-    """
+    '''
     if not ismounted(device):
         run_as_root('swapon %(device)s' % locals())
 
 
 def ismounted(device):
-    """
+    '''
     Check if partition is mounted
 
     Example::
@@ -118,7 +120,7 @@ def ismounted(device):
 
         if ismounted('/dev/sda1'):
            print ("disk sda1 is mounted")
-    """
+    '''
     # Check filesystem
     with settings(hide('running', 'stdout')):
         res = run_as_root('mount')
@@ -139,7 +141,7 @@ def ismounted(device):
 
 
 def mkfs(device, ftype):
-    """
+    '''
     Format filesystem
 
     Example::
@@ -147,7 +149,7 @@ def mkfs(device, ftype):
         from fabtools.disk import mkfs
 
         mkfs('/dev/sda2', 'ext4')
-    """
+    '''
     if not ismounted('%(device)s' % locals()):
         run_as_root('mkfs.%(ftype)s %(device)s' % locals())
     else:
@@ -155,7 +157,7 @@ def mkfs(device, ftype):
 
 
 def mkswap(device):
-    """
+    '''
     Format swap partition
 
     Example::
@@ -163,7 +165,7 @@ def mkswap(device):
         from fabtools.disk import mkswap
 
         mkswap('/dev/sda2')
-    """
+    '''
     if not ismounted(device):
         run_as_root('mkswap %(device)s' % locals())
     else:
